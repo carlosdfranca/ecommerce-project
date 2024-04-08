@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Homepage{% endblock %}
+
+{% block body %}
+<h1>Aqui vai ser página da loja</h1>
+
+{% for produto in produtos %}
+<p>Produto: {{ produto.nome }}</p>
+<p>Preço: {{ produto.preco }}</p>
+
+<img src="{{ produto.imagem.url }}" alt="" width="150" height="200">
+
+<br>
+
+{% endfor %}
+
+
+{% endblock %}
