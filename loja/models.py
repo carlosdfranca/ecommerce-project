@@ -30,6 +30,19 @@ class Tipo(models.Model):
         return str(self.nome)
 
 
+
+class Cor(models.Model):
+    nome = models.CharField(max_length=200, null=True, blank=True)
+    codigo_hex = models.CharField(max_length=10, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return str(self.nome)
+
+    class Meta:
+        ordering = ['nome']
+
+
+
 class Produto(models.Model):
     imagem = models.ImageField(null=True, blank=True)
     nome = models.CharField(max_length=200, null=True, blank=True)
@@ -46,7 +59,7 @@ class Produto(models.Model):
     
 class ItemEstoque(models.Model):
     produto = models.ForeignKey(Produto, null=True, blank=True, on_delete=models.SET_NULL)
-    cor = models.CharField(max_length=200, null=True, blank=True)
+    cor = models.ForeignKey(Cor, null=True, blank=True, on_delete=models.SET_NULL)
     tamanho = models.CharField(max_length=200, null=True, blank=True)
     quantidade = models.IntegerField(default=0)
 

@@ -37,3 +37,7 @@ class ItensPedidoAdmin(admin.ModelAdmin):
 @admin.register(Banner)
 class BannerAdmin(admin.ModelAdmin):
     list_display = ['link_destino', 'ativo']
+
+@admin.register(Cor)
+class CorAdmin(admin.ModelAdmin):
+    list_display = ['nome']
