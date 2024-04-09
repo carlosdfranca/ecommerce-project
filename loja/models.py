@@ -18,6 +18,9 @@ class Categoria(models.Model):
 
     def __str__(self) -> str:
         return str(self.nome)
+    
+    class Meta:
+        ordering = ['nome']
 
 
 class Tipo(models.Model):
@@ -53,7 +56,7 @@ class ItemEstoque(models.Model):
 
 
 class Endereco(models.Model):
-    rua = models.CharField(max_length=200, null=True, blank=True)
+    rua = models.CharField(max_length=400, null=True, blank=True)
     numero = models.IntegerField(default=0)
     complemento = models.CharField(max_length=200, null=True, blank=True)
     cep = models.CharField(max_length=200, null=True, blank=True)
@@ -82,3 +85,11 @@ class ItensPedido(models.Model):
 
     def __str__(self) -> str:
         return f'{self.pedido} - {self.itens_estoque}'
+
+class Banner(models.Model):
+    imagem = models.ImageField(null=True, blank=True)
+    link_destino = models.CharField(max_length=400, null=True, blank=True)
+    ativo = models.BooleanField(default=True)
+
+    def __str__(self) -> str:
+        return str(self.link_destino)

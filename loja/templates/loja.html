@@ -10,7 +10,7 @@
 <p>Produto: {{ produto.nome }}</p>
 <p>Preço: {{ produto.preco }}</p>
 
-<img src="{{ produto.imagem.url }}" alt="" width="150" height="200">
+<a href="{% url 'produto' produto.id %}"><img src="{{ produto.imagem.url }}" alt="" width="150" height="200"></a>
 
 <br>
 

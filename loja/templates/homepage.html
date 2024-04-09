@@ -5,4 +5,12 @@
 
 {% block body %}
 <h1>Aqui vai ser a minha Homepage</h1>
+
+{% for banner in banners %}
+<a href="{% url 'loja' %}{{ banner.link_destino }}">
+    <img src="{{ banner.imagem.url }}" alt="">
+</a>
+
+<br>
+{% endfor %}
 {% endblock %}

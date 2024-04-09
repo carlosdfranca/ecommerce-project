@@ -1,15 +1,30 @@
+import unicodedata
 from django.shortcuts import render
 from .models import *
 
 # Create your views here.
 def homepage(request):
-    return render(request, 'homepage.html')
+    banners = Banner.objects.all()
+    context = {"banners": banners}
+    return render(request, 'homepage.html', context)
 
 
-def loja(request):
+def loja(request, nome_categoria=None):
     produtos = Produto.objects.all()
+
+    if nome_categoria:
+        produtos = produtos.filter(categoria__nome=nome_categoria)
+
     context = {"produtos": produtos}
     return render(request, 'loja.html', context)
+
+
+def produto(request, id_produto):
+    produto = Produto.objects.get(id=id_produto)
+    
+    context = {"produto": produto}
+    
+    return render(request, 'produto.html', context)
 
 
 def carrinho(request):

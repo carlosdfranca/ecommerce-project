@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ produto.nome }}{% endblock %}
+
+{% block body %}
+
+<h1>{{ produto.nome }}</h1>
+
+<img src="{{ produto.imagem.url }}" alt="" width="150" height="200">
+
+<br>
+
+<p>Preço: {{ produto.preco }}</p>
+
+{% endblock %}
