@@ -88,9 +88,25 @@ class Pedido(models.Model):
     codigo_transacao = models.CharField(max_length=200, null=True, blank=True)
     endereco = models.ForeignKey(Endereco, null=True, blank=True, on_delete=models.SET_NULL)
     def __str__(self) -> str:
-        return f"{self.cliente} - {self.data_finalizacao}"
-
+        return f"{self.id}. {self.cliente} - {self.data_finalizacao}"
     
+    @property
+    def quantidade_itens(self):
+        itens_pedido = ItensPedido.objects.filter(pedido__id=self.id)
+        quantidade_total = sum(
+            [item.quantidade for item in itens_pedido]
+        )
+        return quantidade_total
+
+    @property
+    def preco_total_itens(self):
+        itens_pedido = ItensPedido.objects.filter(pedido__id=self.id)
+        preco_total = sum(
+            [item.preco_total for item in itens_pedido]
+        )
+        return preco_total
+
+
 class ItensPedido(models.Model):
     itens_estoque = models.ForeignKey(ItemEstoque, null=True, blank=True, on_delete=models.SET_NULL)
     quantidade = models.IntegerField(default=0)
@@ -98,6 +114,10 @@ class ItensPedido(models.Model):
 
     def __str__(self) -> str:
         return f'{self.pedido} - {self.itens_estoque}'
+    
+    @property
+    def preco_total(self):
+        return self.quantidade * self.itens_estoque.produto.preco
 
 class Banner(models.Model):
     imagem = models.ImageField(null=True, blank=True)

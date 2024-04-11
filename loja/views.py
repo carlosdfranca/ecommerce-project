@@ -1,5 +1,5 @@
 import unicodedata
-from django.shortcuts import render
+from django.shortcuts import render, redirect   
 from .models import *
 
 # Create your views here.
@@ -19,17 +19,67 @@ def loja(request, nome_categoria=None):
     return render(request, 'loja.html', context)
 
 
-def produto(request, id_produto):
+def produto(request, id_produto, id_cor=None):
     produto = Produto.objects.get(id=id_produto)
     itens_estoque = ItemEstoque.objects.filter(produto=produto, quantidade__gt=0)
+
+    tem_estoque = False
+    cores = {}
+    tamanhos = {}
+    cor_selecionada = None
+
+    if len(itens_estoque)>0:
+        tem_estoque = True
+        cores = {item.cor for item in itens_estoque}
+        if id_cor:
+            itens_estoque = ItemEstoque.objects.filter(produto=produto, quantidade__gt=0, cor__id=id_cor)
+            tamanhos = {item.tamanho for item in itens_estoque}
+            cor_selecionada = Cor.objects.get(id=id_cor)
     
-    context = {"produto": produto, "itens_estoque": itens_estoque}
+    context = {
+        "produto": produto, 
+        "itens_estoque": itens_estoque, 
+        "tem_estoque": tem_estoque,
+        "cores": cores,
+        "tamanhos": tamanhos, 
+        "cor_selecionada": cor_selecionada
+    }
     
     return render(request, 'produto.html', context)
 
 
+def adicionar_carrinho(request, produto_id):
+    if request.method == "POST" and produto_id:
+        dados = request.POST.dict()
+        print(dados)
+        tamanho = dados.get("tamanho")
+        cor_id = dados.get("cor")
+        if not tamanho and not cor_id:
+            return redirect('loja')
+        # Peagr o cliente
+        # Criar o pedido , ou pegar o que está em aberto
+        return redirect('carrinho')
+    else:
+        return redirect('loja')
+
+
 def carrinho(request):
-    return render(request, 'carrinho.html')
+
+    if request.user.is_authenticated:
+        cliente = request.user.cliente
+
+    pedido, criado = Pedido.objects.get_or_create(cliente=cliente, finalizado=False)
+
+    itens_pedido = ItensPedido.objects.filter(pedido=pedido)
+
+    print(pedido)
+    for item in itens_pedido:
+        print(item.itens_estoque.produto.nome)
+
+    context = {"itens_pedido": itens_pedido, "pedido": pedido}
+    return render(request, 'carrinho.html', context)
+
+
 
 
 def checkout(request):
@@ -44,3 +94,6 @@ def minha_conta(request):
 
 def login(request):
     return render(request, 'usuarios/login.html')
+
+
+# TODO quando eu criar o recurso de criar conta, ja vai ter que criar um cliente para o usuário.
