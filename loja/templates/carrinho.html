@@ -15,7 +15,7 @@
     Produto: {{ item.itens_estoque.produto.nome }}
     Cor: {{ item.itens_estoque.cor.nome }}
     Tamanho: {{ item.itens_estoque.tamanho }}
-    Quantidade: {{ item.quantidade }}
+    Quantidade: <button> - </button> {{ item.quantidade }} <button> + </button>
     Preço Unitário: {{ item.itens_estoque.produto.preco }}
     Preço Total: R${{ item.preco_total }}
 </p>
