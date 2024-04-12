@@ -15,7 +15,23 @@
     Produto: {{ item.itens_estoque.produto.nome }}
     Cor: {{ item.itens_estoque.cor.nome }}
     Tamanho: {{ item.itens_estoque.tamanho }}
-    Quantidade: <button> - </button> {{ item.quantidade }} <button> + </button>
+    <div style="display: flex;">
+        Quantidade:
+            <form method="POST" action="{% url 'remover_carrinho' item.itens_estoque.produto.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="tamanho" value="{{ item.itens_estoque.tamanho }}" >
+                <input type="hidden" name="cor" value="{{ item.itens_estoque.cor.id }}">
+                <button> - </button>
+            </form>
+            {{item.quantidade }}
+            <form method="POST" action="{% url 'adicionar_carrinho' item.itens_estoque.produto.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="tamanho" value="{{ item.itens_estoque.tamanho }}" >
+                <input type="hidden" name="cor" value="{{ item.itens_estoque.cor.id }}">
+                <button> + </button>
+            </form>
+    </div>
+
     Preço Unitário: {{ item.itens_estoque.produto.preco }}
     Preço Total: R${{ item.preco_total }}
 </p>
