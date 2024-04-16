@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block body %}
+<h1>Tela para adicionar o edereço do cliente</h1>
+
+<a href="{% url 'checkout' %}">Retornar para a compra</a>
+
+<h3>Preencha as informações para adiciopnar o endereço</h3>
+
+<form action="{% url 'adicionar_endereco' %}" method="post">
+    {% csrf_token %}
+    <input type="text" name="cidade" placeholder="Cidade">
+    <input type="text" name="estado" placeholder="Estado">
+    <input type="text" name="rua" placeholder="Rua">
+    <input type="number" name="numero" placeholder="Número">
+    <input type="text" name="complemento" placeholder="Complemento">
+    <input type="number" name="cep" placeholder="CEP (somente números)">
+    <button type="submit">Adicionar Endereço</button>
+</form>
+{% endblock %}
