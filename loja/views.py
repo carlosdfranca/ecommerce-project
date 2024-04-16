@@ -2,6 +2,7 @@ import unicodedata
 from django.shortcuts import render, redirect   
 from .models import *
 import uuid
+from .utils import *
 
 # Create your views here.
 def homepage(request):
@@ -11,13 +12,21 @@ def homepage(request):
 
 
 
-def loja(request, nome_categoria=None):
+def loja(request, filtro=None):
     produtos = Produto.objects.all()
 
-    if nome_categoria:
-        produtos = produtos.filter(categoria__nome=nome_categoria)
+    produtos = filtrar_produtos(produtos, filtro)
 
-    context = {"produtos": produtos}
+    minimo, maximo = preco_minimo_maximo(produtos)
+
+    tamanhos = ["P", "M", "G"]
+  
+    context = {
+        "produtos": produtos,
+        "minimo": minimo,
+        "maximo": maximo,
+        "tamanhos": tamanhos
+    }
     return render(request, 'loja.html', context)
 
 
@@ -162,6 +171,7 @@ def checkout(request):
     context = {"pedido": pedido, "enderecos": enderecos}
 
     return render(request, 'checkout.html', context)
+
 
 
 def adicionar_endereco(request):

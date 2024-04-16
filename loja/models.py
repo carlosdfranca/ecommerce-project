@@ -15,6 +15,7 @@ class Cliente(models.Model):
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=200, null=True, blank=True)
+    slug = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
         return str(self.nome)
@@ -25,9 +26,13 @@ class Categoria(models.Model):
 
 class Tipo(models.Model):
     nome = models.CharField(max_length=200, null=True, blank=True)
+    slug = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
         return str(self.nome)
+    
+    class Meta:
+        ordering = ['nome']
 
 
 
