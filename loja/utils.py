@@ -22,4 +22,4 @@ def preco_minimo_maximo(produtos):
         maximo = list(produtos.aggregate(Max("preco")).values())[0]
         maximo = str(round(maximo, 2))
 
-    return minimo,  maximo
+    return minimo, maximo
