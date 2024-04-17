@@ -13,19 +13,42 @@ def homepage(request):
 
 
 def loja(request, filtro=None):
+    # Pegando os produtos, juntamente com o Filtro (caso tenha)
     produtos = Produto.objects.all()
-
     produtos = filtrar_produtos(produtos, filtro)
 
+    # Pegando o minimo e o máximo dos preços para colocar filtro da barra lateral. 
     minimo, maximo = preco_minimo_maximo(produtos)
 
-    tamanhos = ["P", "M", "G"]
-  
+    # Pegando as categorias existentes para colocar no filtro da barra lateral
+    id_categorias = list(produtos.values_list("categoria", flat=True).distinct())
+    categorias = Categoria.objects.filter(id__in=id_categorias)
+
+    if request.method == "POST":
+        dados = request.POST.dict()
+        print(dados)
+        produtos = produtos.filter(preco__gte=dados.get("preco_minimo"), preco__lte=dados.get("preco_maximo"))
+        if "tamanho" in dados:
+            itens = ItemEstoque.objects.filter(produto__in=produtos, tamanho=dados.get("tamanho"))
+            ids_produtos = itens.values_list("produto").distinct()
+            produtos = produtos.filter(id__in=ids_produtos)
+        if "tipo" in dados:
+            produtos = produtos.filter(tipo__slug=dados.get("tipo"))
+        if "categoria" in dados:
+            produtos = produtos.filter(categoria__slug=dados.get("categoria"))
+    
+
+    # Pegando os tamanhos e ordenando-os de forma correta para o filtro da barra lateral.
+    itens = ItemEstoque.objects.filter(produto__in=produtos)
+    tamanhos = list(itens.values_list("tamanho", flat=True).distinct())
+    tamanhos = ordrnar_tamanhos(tamanhos)
+
     context = {
         "produtos": produtos,
         "minimo": minimo,
         "maximo": maximo,
-        "tamanhos": tamanhos
+        "tamanhos": tamanhos,
+        "categorias": categorias,
     }
     return render(request, 'loja.html', context)
 

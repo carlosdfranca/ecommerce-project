@@ -23,3 +23,25 @@ def preco_minimo_maximo(produtos):
         maximo = str(round(maximo, 2))
 
     return minimo, maximo
+
+
+def ordrnar_tamanhos(lista):
+    dict_ordem_tamanhos = {
+        "PP": 1,
+        "P": 2,
+        "M": 3,
+        "G": 4,
+        "GG": 5
+    }
+
+    # Função de chave personalizada
+    def ordenar_tamanho(item):
+        if item.isdigit():  # Se for um número
+            return int(item) # Ordena os números
+        else:
+            return dict_ordem_tamanhos.get(item, len(dict_ordem_tamanhos) + 1)  # Obtém o valor do tamanho no dicionário
+
+    # Ordena a lista usando a função de chave personalizada
+    lista = sorted(lista, key=ordenar_tamanho)
+
+    return lista
