@@ -1,8 +1,12 @@
-import unicodedata
 from django.shortcuts import render, redirect   
+from django.contrib.auth import login, logout, authenticate
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
 from .models import *
-import uuid
 from .utils import *
+
+import uuid
 
 # Create your views here.
 def homepage(request):
@@ -250,8 +254,76 @@ def minha_conta(request):
 
 
 
-def login(request):
-    return render(request, 'usuarios/login.html')
+def fazer_login(request):
+    erro = False
+    if request.user.is_authenticated:
+        return redirect("loja")
+    if request.method == "POST":
+        dados = request.POST.dict()
+        if "email" in dados and "senha" in dados:
+            email = dados.get("email")
+            senha = dados.get("senha")
+            usuario = authenticate(request, username=email, password=senha)
+            if usuario:
+                login(request, usuario)
+                return redirect("loja")
+            else:
+                erro = True
+        else:
+            erro = True
+    
+    context = {
+        "erro": erro
+    }
 
+    return render(request, 'usuarios/login.html', context)
+
+
+
+def criar_conta(request):
+    erro = None
+    if request.user.is_authenticated:
+        return redirect("loja")
+    if request.method == "POST":
+        dados = request.POST.dict()
+        # Verificando se todos os campos do formulário foram preenchidos
+        if "email" in dados and "senha" in dados and "confirmacao_senha" in dados:
+            email = dados.get("email")
+            senha = dados.get("senha")
+            senha2 = dados.get("confirmacao_senha")
+
+            # Verificando se o campo email, é realmente um email válido
+            try:
+                validate_email(email)
+            except ValidationError:
+                erro = "email_invalido"
+
+            # Verificando se a senha e a confirmação de senha são compatíveis
+            if senha == senha2:
+                # Vendo se o e-mail ja existe ou criando o usuário
+                usuario, criado = User.objects.get_or_create(username=email, email=email)
+                if not criado:
+                    erro = "usuario_existente"
+                else:
+                    # Colocando a senha para o usuário
+                    usuario.set_password(senha)
+                    usuario.save()
+
+                    #Fazendo o Login
+                    usuario = authenticate(request, username=email, password=senha)
+                    login(request, usuario)
+
+                    # Criando o cliente
+            else:
+                erro = "senhas_diferentes"
+        else:
+            erro = "preenchimento"
+
+
+
+    context = {
+        "erro": erro
+    }
+    return render(request, 'usuarios/criar_conta.html')
 
 # TODO quando eu criar o recurso de criar conta, ja vai ter que criar um cliente para o usuário.
