@@ -24,6 +24,7 @@ def loja(request, filtro=None):
     id_categorias = list(produtos.values_list("categoria", flat=True).distinct())
     categorias = Categoria.objects.filter(id__in=id_categorias)
 
+    # Lógica para o filtro da barra lateral
     if request.method == "POST":
         dados = request.POST.dict()
         print(dados)
@@ -37,6 +38,10 @@ def loja(request, filtro=None):
         if "categoria" in dados:
             produtos = produtos.filter(categoria__slug=dados.get("categoria"))
     
+    # Ordenando os produtos de acordo com o filtro passado na página
+    ordem = request.GET.get("ordem", "")
+    produtos = ordenar_por_ordem(produtos, ordem)
+
 
     # Pegando os tamanhos e ordenando-os de forma correta para o filtro da barra lateral.
     itens = ItemEstoque.objects.filter(produto__in=produtos)

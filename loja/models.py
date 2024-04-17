@@ -58,6 +58,12 @@ class Produto(models.Model):
 
     def __str__(self) -> str:
         return str(self.nome)
+    
+    def total_vendas(self):
+        itens = ItensPedido.objects.filter(pedido__finalizado=True, itens_estoque__produto=self.id)
+        total = sum([item.quantidade for item in itens])
+        return total
+
         
 
 
