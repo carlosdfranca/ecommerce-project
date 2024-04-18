@@ -116,6 +116,12 @@ class Pedido(models.Model):
             [item.preco_total for item in itens_pedido]
         )
         return preco_total
+    
+    @property
+    def itens(self):
+        itens_pedido = ItensPedido.objects.filter(pedido__id=self.id)
+        return itens_pedido
+        
 
 
 class ItensPedido(models.Model):

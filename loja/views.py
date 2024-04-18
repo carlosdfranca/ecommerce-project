@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect   
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
@@ -249,8 +250,72 @@ def adicionar_endereco(request):
 
 
 # páginas dos usuários
+@login_required
 def minha_conta(request):
-    return render(request, 'usuarios/minha_conta.html')
+    erro = None
+    alterado = False
+    if request.method == "POST":
+        dados = request.POST.dict()
+        if "senha_atual" in dados:
+            # Alterar a minha senha
+            senha_atual = dados.get("senha_atual")
+            nova_senha = dados.get("nova_senha")
+            confirma_senha = dados.get("confirma_senha")
+
+
+            if nova_senha == confirma_senha:
+                usuario = authenticate(request, username=request.user.email, password=senha_atual)
+                if usuario:
+                    # Altera a Senha
+                    usuario.set_password(nova_senha)
+                    usuario.save()
+                    alterado = True
+                else:
+                    erro = "senha_atual_incorreta"
+            else: 
+                erro = "senhas_diferentes"
+            
+
+        elif "email" in dados:
+            # Alterar dados pessoais do usuário
+            nome = dados.get("nome")
+            email = dados.get("email")
+            telefone = dados.get("telefone")
+
+            if email != request.user.email:
+                usuarios = User.objects.filter(email=email)
+                if len(usuarios) > 0:
+                    erro = "usuario_existente"
+                else:
+                    cliente = request.user.cliente
+                    cliente.email = email
+                    request.user.email = email
+                    request.user.username = email
+                    cliente.nome = nome
+                    cliente.telefone = telefone
+                    cliente.save()
+                    request.user.save()
+                    alterado = True
+        else:
+            erro = "formulário_invalido"
+
+    context = {
+        "erro": erro,
+        "alterado": alterado
+    }
+
+    return render(request, 'usuarios/minha_conta.html', context)
+
+
+@login_required
+def meus_pedidos(request):
+    cliente = request.user.cliente
+    pedidos = Pedido.objects.filter(cliente=cliente, finalizado=True).order_by("-data_finalizacao")
+
+    context = {
+        "pedidos": pedidos
+    }
+    return render(request, 'usuarios/meus_pedidos.html', context)
 
 
 
@@ -342,7 +407,7 @@ def criar_conta(request):
     return render(request, 'usuarios/criar_conta.html', context)
 
 
-
+@login_required
 def fazer_logout(request):
     logout(request)
     return redirect('fazer_login')

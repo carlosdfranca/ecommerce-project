@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Homepage{% endblock %}
+
+{% block body %}
+<h1>Meus Pedidos</h1>
+
+{% for pedido in pedidos %}
+    <div style="display: flex;">
+        <div style="padding-right: 50px;">
+            <p>Data: {{ pedido.data_finalizacao }} </p>
+            <p>ID Pedido: {{ pedido.id }} </p>
+            <p>Código Transação: {{ pedido.codigo_transacao }} </p>
+            <p>Preço: {{ pedido.preco_total_itens }} </p>
+            <p>Endereço: {{ pedido.endereco.rua }}, nº{{pedido.endereco.numero}} - {{pedido.endereco.cep}} </p>
+        </div>
+        <div style="display: flex;">
+            {% for item in pedido.itens %}
+                <div>
+                    <img src="{{ item.itens_estoque.produto.imagem.url }}" width="120" height="175">
+                </div>
+                <div style="padding-inline: 15px;">
+                    <p>Produto: {{ item.itens_estoque.produto.nome }}</p>
+                    <p>Quantidade: {{ item.quantidade }}</p>
+                    <p>Preço Unitário: {{ item.preco_total }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <hr>
+{% endfor %}
+
+{% endblock %}

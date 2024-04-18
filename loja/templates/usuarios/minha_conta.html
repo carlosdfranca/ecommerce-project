@@ -4,7 +4,40 @@
 {% block title %}Homepage{% endblock %}
 
 {% block body %}
-<h1>Aqui vai ser a página da conta do usuário</h1>
+<h1>Minha Conta</h1>
 
-<a href="{% url 'fazer_logout' %}">LLogout</a>
-{% endblock %}
+<a href="{% url 'meus_pedidos' %}">Meus Pedidos</a>
+<a href="{% url 'fazer_logout' %}">Logout</a>
+
+{% if erro %}
+<h3>{{erro}}</h3>
+{% elif alterado %}
+<h3 style="color: green;">Dados Altedados com sucesso</h3>
+{% endif %}
+
+<div>
+    <h2>Dados Pessoais</h2>
+    <form action="{% url 'minha_conta' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="nome" placeholder="Nome Completo" 
+        {%if request.user.cliente.nome%} value="{{request.user.cliente.nome}}" {%endif%}>
+    
+        <input type="email" name="email" placeholder="E-mail" value="{{request.user.email}}">
+    
+        <input type="number" name="telefone" placeholder="Número"
+        {%if request.user.cliente.telefone%} value="{{request.user.cliente.telefone}}" {%endif%}>
+        <button type="submit">Salvar</button>
+    </form> 
+</div>
+<br>
+<div>
+    <h2>Alterar a senha</h2>
+    <form action="{% url 'minha_conta' %}" method="post">
+        {% csrf_token %}
+        <input type="password" name="senha_atual" placeholder="Senha atual">
+        <input type="password" name="nova_senha" placeholder="Nova senha">
+        <input type="password" name="confirma_senha" placeholder="Confirmação de senha">
+        <button type="submit">Alterar Senha</button>
+    </form>
+</div>
+   {% endblock %}
