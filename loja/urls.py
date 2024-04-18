@@ -16,4 +16,5 @@ urlpatterns = [
     path('minhaconta/', minha_conta, name='minha_conta'),
     path('login/', fazer_login, name='fazer_login'),
     path('criarconta/', criar_conta, name='criar_conta'),
+    path('logout/ ', fazer_logout, name='fazer_logout'),
 ]

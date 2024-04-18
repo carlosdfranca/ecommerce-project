@@ -286,44 +286,64 @@ def criar_conta(request):
         return redirect("loja")
     if request.method == "POST":
         dados = request.POST.dict()
-        # Verificando se todos os campos do formulário foram preenchidos
-        if "email" in dados and "senha" in dados and "confirmacao_senha" in dados:
-            email = dados.get("email")
-            senha = dados.get("senha")
-            senha2 = dados.get("confirmacao_senha")
+        for chave, valor in dados.items():
+            if valor == "":
+                erro = "preenchimento"
+        if not erro:
+            # Verificando se todos os campos do formulário foram preenchidos
+            if "email" in dados and "senha" in dados and "confirmacao_senha" in dados:
+                email = dados.get("email")
+                senha = dados.get("senha")
+                senha2 = dados.get("confirmacao_senha")
 
-            # Verificando se o campo email, é realmente um email válido
-            try:
-                validate_email(email)
-            except ValidationError:
-                erro = "email_invalido"
+                # Verificando se o campo email, é realmente um email válido
+                try:
+                    validate_email(email)
+                except ValidationError:
+                    erro = "email_invalido"
 
-            # Verificando se a senha e a confirmação de senha são compatíveis
-            if senha == senha2:
-                # Vendo se o e-mail ja existe ou criando o usuário
-                usuario, criado = User.objects.get_or_create(username=email, email=email)
-                if not criado:
-                    erro = "usuario_existente"
+                # Verificando se a senha e a confirmação de senha são compatíveis
+                if senha == senha2:
+                    # Vendo se o e-mail ja existe ou criando o usuário
+                    usuario, criado = User.objects.get_or_create(username=email, email=email)
+                    if not criado:
+                        erro = "usuario_existente"
+                    else:
+                        # Colocando a senha para o usuário
+                        usuario.set_password(senha)
+                        usuario.save()
+
+                        #Fazendo o Login
+                        usuario = authenticate(request, username=email, password=senha)
+                        login(request, usuario)
+
+                        # Criando o cliente
+                        # Verificar se existe o id_sessao nos cookies
+                        if request.COOKIES.get("id_sessao"):
+                            id_sessao = request.COOKIES.get("id_sessao")
+                            cliente, criado = Cliente.objects.get_or_create(id_sessao=id_sessao)
+                        else:
+                            cliente, criado = Cliente.objects.get_or_create(email=email)
+                        
+                        cliente.usuario = usuario
+                        cliente.email = email
+                        cliente.save()
+                        return redirect("loja")
                 else:
-                    # Colocando a senha para o usuário
-                    usuario.set_password(senha)
-                    usuario.save()
-
-                    #Fazendo o Login
-                    usuario = authenticate(request, username=email, password=senha)
-                    login(request, usuario)
-
-                    # Criando o cliente
+                    erro = "senhas_diferentes"
             else:
-                erro = "senhas_diferentes"
-        else:
-            erro = "preenchimento"
+                erro = "preenchimento"
 
 
 
     context = {
         "erro": erro
     }
-    return render(request, 'usuarios/criar_conta.html')
+    return render(request, 'usuarios/criar_conta.html', context)
 
+
+
+def fazer_logout(request):
+    logout(request)
+    return redirect('fazer_login')
 # TODO quando eu criar o recurso de criar conta, ja vai ter que criar um cliente para o usuário.

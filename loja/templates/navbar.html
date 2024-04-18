@@ -17,6 +17,7 @@
     </div>
 
     {% if request.user.is_authenticated %}
+        <h3>{{ request.user.email }}</h3>
         <a href="{% url 'minha_conta' %}">Minha conta</a>
     {% else %}
         <a href="{% url 'fazer_login' %}">Login</a>

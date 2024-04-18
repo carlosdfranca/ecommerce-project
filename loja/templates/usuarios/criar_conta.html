@@ -4,6 +4,23 @@
 {% block title %}Homepage{% endblock %}
 
 {% block body %}
+
+{% if erro == "email_invalido" %}
+<p>Seu e-mail está inválido, preecha novamente com outro e-mail.</p>
+{% endif %}
+
+{% if erro == "usuario_existente" %}
+<p>Este e-mail ja existe em outra conta de usuário. <a href="{% url 'fazer_login' %}">Faça o Login.</a></p>
+{% endif %}
+
+{% if erro == "senhas_diferentes" %}
+<p>A confirmaçãoda senha tem que ser igual a senha</p>
+{% endif %}
+
+{% if erro == "preenchimento" %}
+<p>Preencha todos os campos corretamente</p>
+{% endif %}
+
 <h1>Preencha seus dados para criar a conta</h1>
 
 <form action="{% url 'criar_conta' %}" method="post">
