@@ -12,7 +12,21 @@
 <h4>Quantidade Total de Produtos: {{ pedido.quantidade_itens }}</h4>
 <h4>Preço Total: {{ pedido.preco_total_itens }}</h4>
 
-<form method="post" action="">
+{% if erro %}
+    {% if erro == "preco" %}
+        <p>Preço dos produtos invalido, tente novamente ou volte para o carrinho</p>
+    {% endif %}
+
+    {% if erro == "email_inexistente" %}
+        <p>E-mail não registrado, coloque o e-mail para que o processo de compra possa prosseguir</p>
+    {% endif %}
+
+    {% if erro == "endereco" %}
+        <p>Selecione um endereço para continuar</p>
+    {% endif %}
+{% endif %}
+
+<form method="post" action="{% url 'finalizar_pedido' pedido.id %}">
     {% csrf_token %}
     <h3>Selecione o endereço de entrega: </h3>
     <a href="{% url 'adicionar_endereco' %}">Adicione um endereço de entrega</a>
@@ -26,6 +40,8 @@
         <hr>
         <h4>Preencha com  seu e-mail para finalizar o pedido: </h4>
         <input type="email" name="email" placeholder="e-mail">
+    {% else %}
+        <input type="hidden" name="email" value="{{ request.user.email }}">
     {% endif %}
 
     <input type="hidden" name="total" value="{{ pedido.preco_total_itens }}">

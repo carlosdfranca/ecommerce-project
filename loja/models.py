@@ -11,7 +11,8 @@ class Cliente(models.Model):
 
     def __str__(self) -> str:
         return str(self.email)
-    
+
+
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=200, null=True, blank=True)
@@ -22,6 +23,7 @@ class Categoria(models.Model):
     
     class Meta:
         ordering = ['nome']
+
 
 
 class Tipo(models.Model):
@@ -63,9 +65,7 @@ class Produto(models.Model):
         itens = ItensPedido.objects.filter(pedido__finalizado=True, itens_estoque__produto=self.id)
         total = sum([item.quantidade for item in itens])
         return total
-
-        
-
+   
 
     
 class ItemEstoque(models.Model):
@@ -90,6 +90,7 @@ class Endereco(models.Model):
 
     def __str__(self) -> str:
         return f"{self.cliente} - {self.rua}"
+
 
 
 class Pedido(models.Model):
@@ -136,6 +137,8 @@ class ItensPedido(models.Model):
     def preco_total(self):
         return self.quantidade * self.itens_estoque.produto.preco
 
+
+
 class Banner(models.Model):
     imagem = models.ImageField(null=True, blank=True)
     link_destino = models.CharField(max_length=400, null=True, blank=True)
@@ -143,3 +146,13 @@ class Banner(models.Model):
 
     def __str__(self) -> str:
         return str(self.link_destino)
+
+
+
+class Pagamento(models.Model):
+    id_pagamento = models.CharField(max_length=400)
+    pedido = models.ForeignKey(Pedido, blank=True, null=True, on_delete=models.SET_NULL)
+    aprovado = models.BooleanField(default=True)
+
+    def __str__(self) -> str:
+        return f"{self.pedido} - {self.aprovado}"
