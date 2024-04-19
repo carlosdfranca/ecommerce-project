@@ -207,6 +207,43 @@ def checkout(request):
 
 
 
+def finalizar_pedido(request, pedido_id):
+    if request.method == "POST":
+        erro = None
+        dados = request.POST.dict()
+        total = dados.get("total")
+        email = dados.get("email")
+        pedido = Pedido.objects.get(id=pedido_id)
+
+
+        print(dados)
+        # Vendo se o usuário tentou mudar o preço total no HTML
+        if total != pedido.preco_total:
+            erro = 'preco'
+        else:
+            # Verificando se o usuário Preencheu o espaço de e-mail ou possui ou está cadastrado para pegarmos o e-mail dele
+            if not request.user.is_authenticated and email == "":
+                erro = "email_inexistente"
+            else:
+                if not "endereco" in dados:
+                    erro = "endereco"
+                else: 
+                    endereco = dados.get("endereco")
+                    email = dados.get("email")
+        # Vendo se o cliente colocou o e-mail
+        
+        
+        context = {"erro": erro}
+
+        print(erro)
+
+        return redirect("checkout")
+
+    else:
+        return redirect("loja")
+
+
+
 def adicionar_endereco(request):
     if request.method == "POST":
         # Pegando o cliente

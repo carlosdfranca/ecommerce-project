@@ -12,7 +12,7 @@
 <h4>Quantidade Total de Produtos: {{ pedido.quantidade_itens }}</h4>
 <h4>Preço Total: {{ pedido.preco_total_itens }}</h4>
 
-<form method="post" action="">
+<form method="post" action="{% url 'finalizar_pedido' pedido.id %}">
     {% csrf_token %}
     <h3>Selecione o endereço de entrega: </h3>
     <a href="{% url 'adicionar_endereco' %}">Adicione um endereço de entrega</a>
@@ -26,6 +26,8 @@
         <hr>
         <h4>Preencha com  seu e-mail para finalizar o pedido: </h4>
         <input type="email" name="email" placeholder="e-mail">
+    {% else %}
+        <input type="hidden" name="email" value="{{ request.user.email }}">
     {% endif %}
 
     <input type="hidden" name="total" value="{{ pedido.preco_total_itens }}">
