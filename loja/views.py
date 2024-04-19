@@ -8,6 +8,7 @@ from .models import *
 from .utils import *
 
 import uuid
+from datetime import datetime
 
 # Create your views here.
 def homepage(request):
@@ -201,7 +202,7 @@ def checkout(request):
 
     enderecos = Endereco.objects.filter(cliente=cliente)
 
-    context = {"pedido": pedido, "enderecos": enderecos}
+    context = {"pedido": pedido, "enderecos": enderecos, "erro":None}
 
     return render(request, 'checkout.html', context)
 
@@ -211,33 +212,56 @@ def finalizar_pedido(request, pedido_id):
     if request.method == "POST":
         erro = None
         dados = request.POST.dict()
-        total = dados.get("total")
+        total = float(dados.get("total").replace(",", "."))
         email = dados.get("email")
         pedido = Pedido.objects.get(id=pedido_id)
 
+        print(total)
+        print(pedido.preco_total_itens)
 
-        print(dados)
         # Vendo se o usuário tentou mudar o preço total no HTML
-        if total != pedido.preco_total:
+        if total != float(pedido.preco_total_itens):
             erro = 'preco'
         else:
             # Verificando se o usuário Preencheu o espaço de e-mail ou possui ou está cadastrado para pegarmos o e-mail dele
             if not request.user.is_authenticated and email == "":
                 erro = "email_inexistente"
-            else:
-                if not "endereco" in dados:
-                    erro = "endereco"
-                else: 
-                    endereco = dados.get("endereco")
-                    email = dados.get("email")
-        # Vendo se o cliente colocou o e-mail
-        
+                if not erro:
+                    clientes = Cliente.objects.filter(email=email)
+                    if clientes:
+                        pedido.cliente = clientes[0]
+                    else:
+                        pedido.cliente.email = email
+                        pedido.cliente.save()
+
+                    # Verificando enrdereços
+                    if not "endereco" in dados:
+                        erro = "endereco"
+                    else: 
+                        endereco = dados.get("endereco")
+                        pedido.endereco = endereco
+
         
         context = {"erro": erro}
 
-        print(erro)
+        if erro:
+            enderecos = Endereco.objects.filter(cliente=pedido.cliente)
 
-        return redirect("checkout")
+            context = {
+                "erro": erro,
+                "pedido": pedido,
+                "enderecos": enderecos
+            }
+            return render(request, "checkout.html", context)
+        else:
+            # criando código de tranzação e data de finalização
+            codigo_transacao = f"{pedido.id}-{datetime.now().timestamp()}"
+            pedido.codigo_transacao = codigo_transacao
+            pedido.data_finalizacao = datetime.now()
+            pedido.finalizado = True
+
+            pedido.save()
+            return redirect("meus_pedidos")
 
     else:
         return redirect("loja")
