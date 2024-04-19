@@ -41,3 +41,7 @@ class BannerAdmin(admin.ModelAdmin):
 @admin.register(Cor)
 class CorAdmin(admin.ModelAdmin):
     list_display = ['nome']
+
+@admin.register(Pagamento)
+class PagamentoAdmin(admin.ModelAdmin):
+    list_display = ['pedido', 'aprovado']

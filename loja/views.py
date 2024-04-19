@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect   
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
@@ -9,6 +10,7 @@ from .utils import *
 
 import uuid
 from datetime import datetime
+from .api_mercadopago import criar_pagamento
 
 # Create your views here.
 def homepage(request):
@@ -215,9 +217,8 @@ def finalizar_pedido(request, pedido_id):
         total = float(dados.get("total").replace(",", "."))
         email = dados.get("email")
         pedido = Pedido.objects.get(id=pedido_id)
+        endereco_id = dados.get("endereco")
 
-        print(total)
-        print(pedido.preco_total_itens)
 
         # Vendo se o usuário tentou mudar o preço total no HTML
         if total != float(pedido.preco_total_itens):
@@ -234,13 +235,19 @@ def finalizar_pedido(request, pedido_id):
                         pedido.cliente.email = email
                         pedido.cliente.save()
 
-                    # Verificando enrdereços
-                    if not "endereco" in dados:
-                        erro = "endereco"
-                    else: 
-                        endereco = dados.get("endereco")
-                        pedido.endereco = endereco
+            # Verificando enrdereços
+            if not "endereco" in dados:
+                erro = "endereco"
+                print(erro)
+            else: 
+                endereco = Endereco.objects.get(id=endereco_id)
+                pedido.endereco = endereco
 
+        # criando código de tranzação e data de finalização
+        codigo_transacao = f"{pedido.id}-{datetime.now().timestamp()}"
+        pedido.codigo_transacao = codigo_transacao
+
+        pedido.save()
         
         context = {"erro": erro}
 
@@ -254,17 +261,23 @@ def finalizar_pedido(request, pedido_id):
             }
             return render(request, "checkout.html", context)
         else:
-            # criando código de tranzação e data de finalização
-            codigo_transacao = f"{pedido.id}-{datetime.now().timestamp()}"
-            pedido.codigo_transacao = codigo_transacao
-            pedido.data_finalizacao = datetime.now()
-            pedido.finalizado = True
+            link = request.build_absolute_uri(reverse("finalizar_pagamento"))
+            link_pagamento, id_pagamento = criar_pagamento(ItensPedido.objects.filter(pedido=pedido), link)
 
-            pedido.save()
-            return redirect("meus_pedidos")
+            pagamento = Pagamento.objects.create(id_pagamento=id_pagamento)
+            pagamento.pedido = pedido
+            pagamento.save()
 
+            return redirect(link_pagamento)
     else:
         return redirect("loja")
+
+
+
+def finalizar_pagamento(request):
+    # {'collection_id': '1322667115', 'collection_status': 'approved', 'payment_id': '1322667115', 'status': 'approved', 'external_reference': 'null', 'payment_type': 'credit_card', 'merchant_order_id': '17830198649', 'preference_id': '200364962-6a5658f0-0387-4535-b700-57a79c39c60e', 'site_id': 'MLB', 'processing_mode': 'aggregator', 'merchant_account_id': 'null'}
+    print(request.GET.dict())
+    return redirect("meus_pedidos")
 
 
 

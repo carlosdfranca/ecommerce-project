@@ -18,7 +18,8 @@ urlpatterns = [
     path('adicionarendereco/', adicionar_endereco, name='adicionar_endereco'),
 
     path('checkout/', checkout, name='checkout'),
-    path('finalizarpedido/<int:pedido_id>', finalizar_pedido, name='finalizar_pedido'),
+    path('finalizarpedido/<int:pedido_id>/', finalizar_pedido, name='finalizar_pedido'),
+    path('finalizarpagamento/', finalizar_pagamento, name='finalizar_pagamento'),
     
 
     path('minhaconta/', minha_conta, name='minha_conta'),

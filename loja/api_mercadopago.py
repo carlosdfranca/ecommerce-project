@@ -9,22 +9,30 @@ sdk = mercadopago.SDK(token)
 
 # Cria um dicionário com cada um do Itenspedido
 
-preference_data = {
-    "items": [
-        {
-            "title": "My Item",
-            "quantity": 1,
-            "unit_price": 75.76
-        }
-    ],
-    "back_urls": {
-        "success": "https://www.success.com",
-        "failure": "http://www.failure.com",
-        "pending": "http://www.pending.com"
-    },
-}
+def criar_pagamento(itens_pedido, link):
 
-preference_response = sdk.preference().create(preference_data)
-preference = preference_response["response"]
-link = preference['init_point']
-id_pagamento = preference["id"]
+    itens = []
+    for item in itens_pedido:
+        title = item.itens_estoque.produto.nome
+        quantity = int(item.quantidade)
+        unit_price = float(item.itens_estoque.produto.preco)
+        itens.append({
+            "title": title,
+            "quantity": quantity,
+            "unit_price": unit_price
+        })
+
+    preference_data = {
+        "items": itens,
+        "back_urls": {
+            "success": link,
+            "failure": link,
+            "pending": link
+        },
+    }
+
+    preference_response = sdk.preference().create(preference_data)
+    preference = preference_response["response"]
+    link_pagamento = preference['init_point']
+    id_pagamento = preference["id"]
+    return link_pagamento, id_pagamento
