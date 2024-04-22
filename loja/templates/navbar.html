@@ -3,6 +3,9 @@
 <nav>
     <a href="{% url 'homepage' %}">Reserva</a>
     <a href="{% url 'loja' %}">Loja</a>
+    {% if equipe %}
+        <a href="{% url 'gerenciar_loja' %}">Gerenciar Loja</a>
+    {% endif %}
 
     <div style="display: flex;">
         {% for categoria in categorias_nav %}
@@ -22,6 +25,8 @@
     {% else %}
         <a href="{% url 'fazer_login' %}">Login</a>
     {% endif %}
+
+
     <a href="{% url 'carrinho' %}">Carrinho</a>
     <img src="{% static 'images/carrinho.png' %}" width="20" height="20"    >{{ quantidade_produtos_carrinho }}
 

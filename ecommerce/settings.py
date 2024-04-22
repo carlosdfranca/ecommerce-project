@@ -66,6 +66,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "loja.novo_context.carrinho",
                 "loja.novo_context.categoria_tipo",
+                "loja.novo_context.faz_parte_equipe",
             ],
         },
     },

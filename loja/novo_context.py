@@ -25,3 +25,12 @@ def categoria_tipo(request):
     categorias_nav = Categoria.objects.all()
     tipos_nav = Tipo.objects.all()
     return {"categorias_nav": categorias_nav, "tipos_nav": tipos_nav}
+
+
+
+def faz_parte_equipe(request):
+    equipe = False
+    if request.user.is_authenticated:
+        if request.user.groups.filter(name="equipe").exists():
+            equipe = True
+    return {"equipe": equipe}

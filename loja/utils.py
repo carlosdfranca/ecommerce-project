@@ -1,6 +1,7 @@
 from django.db.models import Min, Max
 from django.core.mail import send_mail
-
+from django.http import HttpResponse
+import csv
 
 def filtrar_produtos(produtos, filtro):
     if filtro:
@@ -71,3 +72,21 @@ def enviar_email_compra(pedido):
 
     remetente = "carlosdudu369@gmail.com"
     send_mail(assunto, corpo, remetente, [email])
+
+
+def exportar_csv(informacoes):
+    print(informacoes.model)
+    colunas = informacoes.model._meta.fields
+    colunas_nome = [coluna.name for coluna in colunas]
+
+    resposta = HttpResponse(content_type='text/csv')
+    resposta["Content-Disposition"] = "attachment; filename=export.csv" 
+
+    criador_csv = csv.writer(resposta, delimiter=';')
+
+    criador_csv.writerow(colunas_nome)
+
+    for linha in informacoes.values_list():
+        criador_csv.writerow(linha)
+
+    return resposta

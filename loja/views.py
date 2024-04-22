@@ -276,7 +276,6 @@ def finalizar_pedido(request, pedido_id):
 
 
 def finalizar_pagamento(request):
-    # {'collection_id': '1322667115', 'collection_status': 'approved', 'payment_id': '1322667115', 'status': 'approved', 'external_reference': 'null', 'payment_type': 'credit_card', 'merchant_order_id': '17830198649', 'preference_id': '200364962-6a5658f0-0387-4535-b700-57a79c39c60e', 'site_id': 'MLB', 'processing_mode': 'aggregator', 'merchant_account_id': 'null'}
     dados = request.GET.dict()
     status = dados.get("status")
     id_pagamento = dados.get("preference_id")
@@ -513,4 +512,33 @@ def criar_conta(request):
 def fazer_logout(request):
     logout(request)
     return redirect('fazer_login')
-# TODO quando eu criar o recurso de criar conta, ja vai ter que criar um cliente para o usuário.
+
+
+@login_required
+def gerenciar_loja(request):
+    if request.user.groups.filter(name="equipe").exists():
+        pedidos_finalizados = Pedido.objects.filter(finalizado=True)
+        quantidade_pedidos = len(pedidos_finalizados)   
+        faturamento = sum([pedido.preco_total_itens for pedido in pedidos_finalizados])
+        quantidade_produtos = sum([pedido.quantidade_itens for pedido in pedidos_finalizados])
+        context = {
+            "quantidade_pedidos": quantidade_pedidos,
+            "faturamento": faturamento,
+            "quantidade_produtos": quantidade_produtos,
+        }
+        return render(request, 'interno/gerenciar_loja.html', context)
+    else:
+        return redirect('loja')
+    
+
+def exportar_relatorio(request, relatorio):
+    if request.user.groups.filter(name="equipe").exists():
+        if relatorio == 'pedidos':
+            informacoes = Pedido.objects.filter(finalizado=True)
+        elif relatorio == 'clientes':
+            informacoes = Cliente.objects.all()
+        elif relatorio == 'enderecos':
+            informacoes = Endereco.objects.all()
+        return exportar_csv(informacoes)
+    else:
+        return redirect('gerenciar_loja')

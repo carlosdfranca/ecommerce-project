@@ -26,6 +26,9 @@ urlpatterns = [
     path('minhaconta/', minha_conta, name='minha_conta'),
     path('meuspedidos/', meus_pedidos, name='meus_pedidos'),
 
+    path('gerenciarloja/', gerenciar_loja, name='gerenciar_loja'),
+    path('exportarrelatorio/<str:relatorio>', exportar_relatorio, name='exportar_relatorio'),
+
     path('login/', fazer_login, name='fazer_login'),
     path('logout/ ', fazer_logout, name='fazer_logout'),
     path('criarconta/', criar_conta, name='criar_conta'),
