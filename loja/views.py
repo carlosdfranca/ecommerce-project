@@ -290,6 +290,7 @@ def finalizar_pagamento(request):
         pedido.data_finalizacao = datetime.now()
         pagamento.save()
         pedido.save()
+        enviar_email_compra(pedido)
         if request.user.is_authenticated:
             return redirect("meus_pedidos")
         else:
@@ -305,6 +306,7 @@ def pedido_aprovado(request, pedido_id):
         "pedido": pedido
     }
     return render(request, "pedido_aprovado.html", context)
+
 
 
 def adicionar_endereco(request):
