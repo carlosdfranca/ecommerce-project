@@ -24,6 +24,7 @@ def criar_pagamento(itens_pedido, link):
 
     preference_data = {
         "items": itens,
+        "auto_return": "all",
         "back_urls": {
             "success": link,
             "failure": link,

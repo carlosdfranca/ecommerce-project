@@ -276,9 +276,34 @@ def finalizar_pedido(request, pedido_id):
 
 def finalizar_pagamento(request):
     # {'collection_id': '1322667115', 'collection_status': 'approved', 'payment_id': '1322667115', 'status': 'approved', 'external_reference': 'null', 'payment_type': 'credit_card', 'merchant_order_id': '17830198649', 'preference_id': '200364962-6a5658f0-0387-4535-b700-57a79c39c60e', 'site_id': 'MLB', 'processing_mode': 'aggregator', 'merchant_account_id': 'null'}
-    print(request.GET.dict())
-    return redirect("meus_pedidos")
+    dados = request.GET.dict()
+    status = dados.get("status")
+    id_pagamento = dados.get("preference_id")
 
+    if status == "approved":
+        # Aprovando o pagamento
+        pagamento = Pagamento.objects.get(id_pagamento=id_pagamento)
+        pagamento.aprovado=True
+        pedido = pagamento.pedido
+        pedido.finalizado = True
+        pedido.data_finalizacao = datetime.now()
+        pagamento.save()
+        pedido.save()
+        if request.user.is_authenticated:
+            return redirect("meus_pedidos")
+        else:
+            return redirect("pedido_aprovado", pedido.id)
+    else:
+        return redirect("checkout")
+    
+
+
+def pedido_aprovado(request, pedido_id):
+    pedido = Pedido.objects.get(id=pedido_id)
+    context = {
+        "pedido": pedido
+    }
+    return render(request, "pedido_aprovado.html", context)
 
 
 def adicionar_endereco(request):

@@ -20,6 +20,7 @@ urlpatterns = [
     path('checkout/', checkout, name='checkout'),
     path('finalizarpedido/<int:pedido_id>/', finalizar_pedido, name='finalizar_pedido'),
     path('finalizarpagamento/', finalizar_pagamento, name='finalizar_pagamento'),
+    path('pedidoaprovado/<int:pedido_id>', pedido_aprovado, name='pedido_aprovado'),
     
 
     path('minhaconta/', minha_conta, name='minha_conta'),
