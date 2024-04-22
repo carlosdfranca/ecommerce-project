@@ -235,6 +235,7 @@ def finalizar_pedido(request, pedido_id):
                         pedido.cliente.email = email
                         pedido.cliente.save()
 
+            
             # Verificando enrdereços
             if not "endereco" in dados:
                 erro = "endereco"
@@ -262,7 +263,7 @@ def finalizar_pedido(request, pedido_id):
             return render(request, "checkout.html", context)
         else:
             link = request.build_absolute_uri(reverse("finalizar_pagamento"))
-            link_pagamento, id_pagamento = criar_pagamento(ItensPedido.objects.filter(pedido=pedido), link)
+            link_pagamento, id_pagamento = criar_pagamento(ItensPedido.objects.filter(pedido=pedido), link, email, endereco)
 
             pagamento = Pagamento.objects.create(id_pagamento=id_pagamento)
             pagamento.pedido = pedido

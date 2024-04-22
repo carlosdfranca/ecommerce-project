@@ -9,7 +9,7 @@ sdk = mercadopago.SDK(token)
 
 # Cria um dicionário com cada um do Itenspedido
 
-def criar_pagamento(itens_pedido, link):
+def criar_pagamento(itens_pedido, link, email, endereco):
 
     itens = []
     for item in itens_pedido:
@@ -21,10 +21,19 @@ def criar_pagamento(itens_pedido, link):
             "quantity": quantity,
             "unit_price": unit_price
         })
+    
 
     preference_data = {
         "items": itens,
         "auto_return": "all",
+        "payer": {
+            "email": email,
+            "address": {
+                "street_name": endereco.rua,
+                "street_number": endereco.numero,
+                "zip_code": endereco.cep
+            }
+        },   
         "back_urls": {
             "success": link,
             "failure": link,
