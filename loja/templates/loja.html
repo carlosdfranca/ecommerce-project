@@ -1,61 +1,133 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Homepage{% endblock %}
 
 {% block body %}
 
-<h1>Aqui vai ser página da loja</h1>
+<main class="principal principal--padding-b">
+    <section class="loja">
+        <form class="menu" method="post" action="">
+            {% csrf_token %}
+            <div class="menu__cabecalho">
+                <div class="menu__titulos">
+                    <div>
+                        <img class="menu__icone" src="{% static 'images/filter-big-1-svgrepo-com.svg' %}"
+                            alt="Ícone filtrar" />
+                    </div>
+                    <p class="menu__titulo">Filtrar</p>
+                </div>
 
-<div style="display: flex;">
-    <form action="" method="post">
-        {% csrf_token %}
-        <p>Preço</p>
-        <input type="number" name="preco_minimo" value={{ minimo }}>
-        <input type="number" name="preco_maximo" value={{ maximo }}>
-    
-        <p>Tamanho</p>
-        {% for tamanho in tamanhos %}
-        <input type="radio" name="tamanho" value="{{ tamanho }}">
-        <label for="{{tamanho}}">{{tamanho}}</label>
-        {% endfor %}
-    
-        <p>Categoria</p>
-        {% for categoria in categorias %}
-        <input type="radio" name="categoria" value="{{ categoria.slug }}">
-        <label for="{{categoria.slug}}">{{categoria.nome}}</label>
-        {% endfor %}
-    
-    
-        <p>Tipo</p>
-        {% for tipo in tipos_nav %}
-        <input type="radio" name="tipo" value="{{ tipo.slug }}">
-        <label for="{{tipo.slug}}">{{tipo.nome}}</label>
-        {% endfor %}
-    
-        <hr>
-        <button type="submit">Aplicar Filtro</button>
-    </form>
-    
-    
-    
-    
-    <div style="padding-left: 50px;">
-        Ordenar por:
-        <ul>
-            <li><a href="#" class="item-ordenar" name="menor-preco">Menor Preço</a></li>
-            <li><a href="#" class="item-ordenar" name="maior-preco">Maior Preço</a></li>
-            <li><a href="#" class="item-ordenar" name="mais-vendidos">Mais Vendidos</a></li>
-        </ul>
-        {% for produto in produtos %}
-        <p>Produto: {{ produto.nome }}</p>
-        <p>Preço: {{ produto.preco }}</p>
-        
-        <a href="{% url 'produto' produto.id %}"><img src="{{ produto.imagem.url }}" alt="" width="150" height="200"></a>
-        
-        <br>
-        {% endfor %}
-    </div>
+                <p class="menu__fechar-filtro">X</p>
+            </div>
 
-</div> 
+            <div class="menu__preco">
+                <p class="menu__subtitulo">Faixa de Preço</p>
+
+                <div class="range_container">
+                    <div class="sliders_control">
+                        <input id="fromSlider" type="range" value="0" min="0" max="1000" />
+                        <input id="toSlider" type="range" value="1000" min="0" max="1000" />
+                    </div>
+
+                    <div class="menu__controles">
+                        <div class="form_control">
+                            <div class="form_control_container">
+                                <input class="form_control_container__time__input" type="number" name="preco_minimo"
+                                    id="fromInput" value="0" min="0" max="1000" />
+                            </div>
+                            <p>até</p>
+                            <div class="form_control_container">
+                                <input class="form_control_container__time__input" type="number" name="preco_maximo"
+                                    id="toInput" value="1000" min="0" max="1000" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="menu__botao">Filtrar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu__expansivel">
+                <div class="menu__expansivel-cabecalho menu__expansivel-cabecalho--aberto">
+                    <p class="menu__subtitulo">Tamanho</p>
+                </div>
+
+                <div class="menu__expansivel-conteudo">
+                    <div class="menu__tamanhos">
+                        {% for tamanho in tamanhos %}
+                        <div class="menu__tamanho">
+                            <div class="menu__tamanho-quadrado">{{ tamanho }}</div>
+                            <input class="menu__checkbox" type="radio" name="tamanho" value="{{ tamanho }}" />
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu__expansivel">
+                <div class="menu__expansivel-cabecalho menu__expansivel-cabecalho--aberto">
+                    <p class="menu__subtitulo">Tipo</p>
+                </div>
+
+                <div class="menu__expansivel-conteudo">
+                    <div class="menu__categorias">
+                        {% for tipo in tipos_nav %}
+
+                        <div class="menu__categoria">
+                            <div class="menu__categoria-quadrado"></div>
+                            <div class="menu__categoria-texto">{{ tipo.nome }}</div>
+                            <input class="menu__checkbox" type="radio" name="tipo" value="{{ tipo.slug }}" />
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="produtos">
+            <div class="produtos__cabecalho">
+                <button class="produtos__cabecalho-filtrar">Filtrar</button>
+
+                <div class="produtos__cabecalho-ordenarpor">
+                    <div class="produtos__cabecalho-imgicone">
+                        <img class="produtos__cabecalho-icone" src="{% static 'images/sort-vertical-svgrepo-com.svg' %}" alt="" />
+                    </div>
+                    <p class="produtos__subtitulo">Ordenar por:</p>
+                    <select class="produtos__select" onchange="redirectToPage()">
+                        <option value="">Selecione uma opção</option>
+                        <option class="item-ordenar" value="maior-preco">Maior preço</option>
+                        <option class="item-ordenar" value="menor-preco">Menor preço</option>
+                        <option class="item-ordenar" value="mais-vendidos">Mais Vendidos</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="produtos__grade">
+                {% for produto in produtos %}
+                    <a href="{% url 'produto' produto.id %}" class="produto">
+                        <div class="produto__imagem">
+                            <img src="{{ produto.imagem.url }}"
+                                alt="Imagem do Produto: {{ produto.nome }}" />
+                        </div>
+
+                        <div class="produto__textos">
+                            <p class="produto__titulo">{{ produto.nome }}</p>
+                            <div class="produto__preco">
+                                <p class="produto__avista">R$ {{ produto.preco }}</p>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</main>
+
+
+
 {% endblock %}

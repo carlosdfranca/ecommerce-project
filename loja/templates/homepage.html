@@ -4,13 +4,17 @@
 {% block title %}Homepage{% endblock %}
 
 {% block body %}
-<h1>Aqui vai ser a minha Homepage</h1>
 
-{% for banner in banners %}
-<a href="{% url 'loja' %}{{ banner.link_destino }}">
-    <img src="{{ banner.imagem.url }}" alt="">
-</a>
+<main class="principal">
 
-<br>
-{% endfor %}
+    <section class="banner-grid">
+        {% for banner in banners %}
+        <a href="{% url 'loja' %}{{ banner.link_destino }}" class="banner-grid__imagem">
+            <img src="{{ banner.imagem.url }}" alt="{{ banner.link_destino }}"/>
+        </a>
+        {% endfor %}
+    </section>
+
+</main>
+
 {% endblock %}

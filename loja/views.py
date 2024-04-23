@@ -14,7 +14,7 @@ from .api_mercadopago import criar_pagamento
 
 # Create your views here.
 def homepage(request):
-    banners = Banner.objects.all()
+    banners = Banner.objects.filter(ativo=True)
     context = {"banners": banners}
     return render(request, 'homepage.html', context)
 
@@ -25,8 +25,6 @@ def loja(request, filtro=None):
     produtos = Produto.objects.all()
     produtos = filtrar_produtos(produtos, filtro)
 
-    # Pegando o minimo e o máximo dos preços para colocar filtro da barra lateral. 
-    minimo, maximo = preco_minimo_maximo(produtos)
 
     # Pegando as categorias existentes para colocar no filtro da barra lateral
     id_categorias = list(produtos.values_list("categoria", flat=True).distinct())
@@ -58,8 +56,6 @@ def loja(request, filtro=None):
 
     context = {
         "produtos": produtos,
-        "minimo": minimo,
-        "maximo": maximo,
         "tamanhos": tamanhos,
         "categorias": categorias,
     }
