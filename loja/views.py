@@ -14,7 +14,7 @@ from .api_mercadopago import criar_pagamento
 
 # Create your views here.
 def homepage(request):
-    banners = Banner.objects.all()
+    banners = Banner.objects.filter(ativo=True)
     context = {"banners": banners}
     return render(request, 'homepage.html', context)
 
@@ -25,8 +25,6 @@ def loja(request, filtro=None):
     produtos = Produto.objects.all()
     produtos = filtrar_produtos(produtos, filtro)
 
-    # Pegando o minimo e o máximo dos preços para colocar filtro da barra lateral. 
-    minimo, maximo = preco_minimo_maximo(produtos)
 
     # Pegando as categorias existentes para colocar no filtro da barra lateral
     id_categorias = list(produtos.values_list("categoria", flat=True).distinct())
@@ -58,8 +56,6 @@ def loja(request, filtro=None):
 
     context = {
         "produtos": produtos,
-        "minimo": minimo,
-        "maximo": maximo,
         "tamanhos": tamanhos,
         "categorias": categorias,
     }
@@ -84,13 +80,16 @@ def produto(request, id_produto, id_cor=None):
             tamanhos = {item.tamanho for item in itens_estoque}
             cor_selecionada = Cor.objects.get(id=id_cor)
     
-    context = {
+    similares = Produto.objects.filter(categoria__id=produto.categoria.id, tipo__id=produto.tipo.id).exclude(id=produto.id)[:4]
+
+    context = { 
         "produto": produto, 
         "itens_estoque": itens_estoque, 
         "tem_estoque": tem_estoque,
         "cores": cores,
         "tamanhos": tamanhos, 
-        "cor_selecionada": cor_selecionada
+        "cor_selecionada": cor_selecionada,
+        "similares": similares,
     }
     
     return render(request, 'produto.html', context)
@@ -196,8 +195,7 @@ def checkout(request):
         if request.COOKIES.get("id_sessao"):
             id_sessao = request.COOKIES.get("id_sessao")
             cliente, criado = Cliente.objects.get_or_create(id_sessao = id_sessao)
-        else: 
-            
+        else:       
             return redirect('loja')
 
     pedido, criado = Pedido.objects.get_or_create(cliente=cliente, finalizado=False)
@@ -216,6 +214,7 @@ def finalizar_pedido(request, pedido_id):
         dados = request.POST.dict()
         total = float(dados.get("total").replace(",", "."))
         email = dados.get("email")
+        print(email)
         pedido = Pedido.objects.get(id=pedido_id)
         endereco_id = dados.get("endereco")
 
@@ -539,6 +538,6 @@ def exportar_relatorio(request, relatorio):
             informacoes = Cliente.objects.all()
         elif relatorio == 'enderecos':
             informacoes = Endereco.objects.all()
-        return exportar_csv(informacoes)
+        return exportar_csv(informacoes, relatorio)
     else:
         return redirect('gerenciar_loja')

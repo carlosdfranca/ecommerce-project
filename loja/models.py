@@ -10,8 +10,7 @@ class Cliente(models.Model):
     usuario = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return str(self.email)
-
+        return f"{self.id}-{self.email}"
 
 
 class Categoria(models.Model):

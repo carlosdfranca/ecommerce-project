@@ -1,43 +1,90 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Homepage{% endblock %}
+{% block title %}Reserva - Dados da Conta{% endblock %}
 
 {% block body %}
-<h1>Minha Conta</h1>
+<main class="principal">
+    <section class="conta">
 
-<a href="{% url 'meus_pedidos' %}">Meus Pedidos</a>
-<a href="{% url 'fazer_logout' %}">Logout</a>
+        {% if alterado %}
+        <h3 style="color: green;">Dados Altedados com sucesso</h3>
+        {% endif %}
 
-{% if erro %}
-<h3>{{erro}}</h3>
-{% elif alterado %}
-<h3 style="color: green;">Dados Altedados com sucesso</h3>
-{% endif %}
+        {% if erro == "formulário_invalido" %}
+        <h3 style="color: red;">Dados incongruentes com os campos do formulário</h3>
+        {% endif %}
 
-<div>
-    <h2>Dados Pessoais</h2>
-    <form action="{% url 'minha_conta' %}" method="post">
-        {% csrf_token %}
-        <input type="text" name="nome" placeholder="Nome Completo" 
-        {%if request.user.cliente.nome%} value="{{request.user.cliente.nome}}" {%endif%}>
-    
-        <input type="email" name="email" placeholder="E-mail" value="{{request.user.email}}">
-    
-        <input type="number" name="telefone" placeholder="Número"
-        {%if request.user.cliente.telefone%} value="{{request.user.cliente.telefone}}" {%endif%}>
-        <button type="submit">Salvar</button>
-    </form> 
-</div>
-<br>
-<div>
-    <h2>Alterar a senha</h2>
-    <form action="{% url 'minha_conta' %}" method="post">
-        {% csrf_token %}
-        <input type="password" name="senha_atual" placeholder="Senha atual">
-        <input type="password" name="nova_senha" placeholder="Nova senha">
-        <input type="password" name="confirma_senha" placeholder="Confirmação de senha">
-        <button type="submit">Alterar Senha</button>
-    </form>
-</div>
-   {% endblock %}
+        
+        <div class="conta__container">
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Dados pessoais</p>
+            </div>
+
+            {% if erro == "usuario_existente" %}
+                <h3 style="color: red;">Este e-mail ja foi cadastrado</h3>
+            {% endif %}
+
+            <form class="conta__form" action="{% url 'minha_conta' %}" method="post">
+                {% csrf_token %}
+                <div class="conta__item">
+                    <label for="nome">Nome</label>
+                    <input name="nome" type="text" {%if request.user.cliente.nome%}
+                    value="{{request.user.cliente.nome}}" {%endif%}/>
+                </div>
+
+                <div class="conta__item">
+                    <label for="email">E-mail</label>
+                    <input name="email" type="email" value="{{request.user.email}}" />
+                </div>
+
+                <div class="conta__item">
+                    <label for="telefone">Telefone</label>
+                    <input name="telefone" type="number" {%if request.user.cliente.telefone%}
+                    value="{{request.user.cliente.telefone}}" {%endif%}/>
+                </div>
+
+                <button class="subtotal__botao" type="submit">
+                    Salvar alterações
+                </button>
+            </form>
+        </div>
+
+        <div class="conta__container">
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Alterar Senha</p>
+            </div>
+
+            {% if erro == "senhas_diferentes" %}
+            <h3 style="color: red;">A nova senha digitada não bate com a confirmação da nova senha. </h3>
+            {% endif %}
+
+            {% if erro == "senha_atual_incorreta" %}
+            <h3 style="color: red;">Senha atual incorreta, por favor diigite a sua senha atual correta</h3>
+            {% endif %}
+
+            <form class="conta__form" action="{% url 'minha_conta' %}" method="post">
+                {% csrf_token %}
+                <div class="conta__item">
+                    <label for="senha_atual">Senha atual</label>
+                    <input name="senha_atual" type="password" />
+                </div>
+
+                <div class="conta__item">
+                    <label for="nova_senha">Nova senha</label>
+                    <input name="nova_senha" type="password" />
+                </div>
+
+                <div class="conta__item">
+                    <label for="confirma_senha">Confirmação de senha</label>
+                    <input name="confirma_senha" type="password" />
+                </div>
+
+                <button class="subtotal__botao" type="submit">
+                    Alterar Senha
+                </button>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock %}

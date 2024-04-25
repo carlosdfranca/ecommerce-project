@@ -21,6 +21,8 @@ def carrinho(request):
 
     return {"quantidade_produtos_carrinho" : quantidade_produtos_carrinho}
 
+
+
 def categoria_tipo(request):
     categorias_nav = Categoria.objects.all()
     tipos_nav = Tipo.objects.all()

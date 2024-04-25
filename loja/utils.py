@@ -14,18 +14,6 @@ def filtrar_produtos(produtos, filtro):
     return produtos
 
 
-def preco_minimo_maximo(produtos):
-    minimo = 0
-    maximo = 0
-
-    if len(produtos) > 0:
-        minimo = list(produtos.aggregate(Min("preco")).values())[0]
-        minimo = str(round(minimo, 2))
-        maximo = list(produtos.aggregate(Max("preco")).values())[0]
-        maximo = str(round(maximo, 2))
-
-    return minimo, maximo
-
 
 def ordrnar_tamanhos(lista):
     dict_ordem_tamanhos = {
@@ -63,6 +51,8 @@ def ordenar_por_ordem(produtos, ordem):
         produtos = [item[1] for item in lista_produtos]
     return produtos
 
+
+
 def enviar_email_compra(pedido):
     email = pedido.cliente.email
     assunto = f"Pedido Aprovado: {pedido.id}"
@@ -74,13 +64,14 @@ def enviar_email_compra(pedido):
     send_mail(assunto, corpo, remetente, [email])
 
 
-def exportar_csv(informacoes):
+
+def exportar_csv(informacoes ,filename):
     print(informacoes.model)
     colunas = informacoes.model._meta.fields
     colunas_nome = [coluna.name for coluna in colunas]
 
     resposta = HttpResponse(content_type='text/csv')
-    resposta["Content-Disposition"] = "attachment; filename=export.csv" 
+    resposta["Content-Disposition"] = f"attachment; filename={filename}.csv" 
 
     criador_csv = csv.writer(resposta, delimiter=';')
 

@@ -4,20 +4,52 @@
 {% block title %}Checkout{% endblock %}
 
 {% block body %}
-<h1>Tela para adicionar o edereço do cliente</h1>
+<main class="principal">
+    <section class="conta">
 
-<a href="{% url 'checkout' %}">Retornar para a compra</a>
+        <div class="conta__container">
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Preencha os dados para adicionar um novo endereço.</p>
+            </div>
 
-<h3>Preencha as informações para adiciopnar o endereço</h3>
+            <form class="conta__form" action="{% url 'adicionar_endereco' %}" method="post">
+                {% csrf_token %}
+                <div class="conta__item conta__item--metade">
+                    <label for="cidade">Cidade</label>
+                    <input name="cidade" type="text" />
+                </div>
 
-<form action="{% url 'adicionar_endereco' %}" method="post">
-    {% csrf_token %}
-    <input type="text" name="cidade" placeholder="Cidade">
-    <input type="text" name="estado" placeholder="Estado">
-    <input type="text" name="rua" placeholder="Rua">
-    <input type="number" name="numero" placeholder="Número">
-    <input type="text" name="complemento" placeholder="Complemento">
-    <input type="number" name="cep" placeholder="CEP (somente números)">
-    <button type="submit">Adicionar Endereço</button>
-</form>
+                <div class="conta__item conta__item--metade">
+                    <label for="estado">Estado</label>
+                    <input name="estado" type="text" />
+                </div>
+
+                <div class="conta__item conta__item--rua">
+                    <label for="rua">Rua</label>
+                    <input name="rua" type="text" />
+                </div>
+
+                <div class="conta__item conta__item--numero">
+                    <label for="numero">Número</label>
+                    <input name="numero" type="number" />
+                </div>
+
+                <div class="conta__item conta__item--metade">
+                    <label for="complemento">Complemento</label>
+                    <input name="complemento" type="text" />
+                </div>
+
+                <div class="conta__item conta__item--metade">
+                    <label for="cep">CEP</label>
+                    <input name="cep" type="number" />
+                </div>
+
+                <button class="subtotal__botao" type="submit">
+                    Adicionar Endereço
+                </button>
+            </form>
+            <a href="{% url 'checkout' %}">Retornar para a compra</a>   
+        </div>
+    </section>
+</main>
 {% endblock %}
