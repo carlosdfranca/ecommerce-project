@@ -65,13 +65,13 @@ def enviar_email_compra(pedido):
 
 
 
-def exportar_csv(informacoes):
+def exportar_csv(informacoes ,filename):
     print(informacoes.model)
     colunas = informacoes.model._meta.fields
     colunas_nome = [coluna.name for coluna in colunas]
 
     resposta = HttpResponse(content_type='text/csv')
-    resposta["Content-Disposition"] = "attachment; filename=export.csv" 
+    resposta["Content-Disposition"] = f"attachment; filename={filename}.csv" 
 
     criador_csv = csv.writer(resposta, delimiter=';')
 

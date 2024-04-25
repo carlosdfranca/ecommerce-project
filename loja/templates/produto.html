@@ -1,68 +1,19 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ produto.nome }}{% endblock %}
+{% block title %}Reserva - {{ produto.nome }}{% endblock %}
 
 {% block body %}
-
-<h1>{{ produto.nome }}</h1>
-
-{% if tem_estoque %}
-
-<img src="{{ produto.imagem.url }}" alt="" width="150" height="200">
-<br>
-<p>Preço: {{ produto.preco }}</p>
-
-{% if cor_selecionada %}
-
-<p>Cor Selecionada:{{ cor_selecionada.nome }}</p>
-
-{% endif %}
-
-
-{% for cor in cores %}
-
-<a href="{% url 'produto' produto.id cor.id %}">
-    <i class="fa-solid fa-circle" style="color: {{ cor.codigo_hex }};"></i>
-</a>
-
-{% endfor %}
-
-{% if tamanhos %}
-
-<form method="POST" action="{% url 'adicionar_carrinho' produto.id %}">
-    {% csrf_token %}
-    <p>Selecione o tamanho:</p>
-
-    {% for tamanho in tamanhos %}
-    <input type="radio" name="tamanho" value="{{tamanho}}">
-    <label for="{{tamanho}}">{{tamanho}}</label>
-    {% endfor %}
-
-    <input type="hidden" name="cor" value="{{cor_selecionada.id}}">
-    <button type="submit">Adicionar ao carrinho</button>
-</form>
-
-{% endif %}
-
-{% else %}
-
-<p>Produto fora de estoque</p>
-
-{% endif %}
 
 <main class="principal principal--padding-b principal--gap">
     <section class="s-produto">
         <div class="s-produto__carrossel">
             <div class="s-produto__carrossel-itens">
                 <div class="s-produto__carrossel-img">
-                    <img src="{{produto.imagem.url}}"
-                        alt="Imagem Carrossel 1" />
+                    <img src="{{produto.imagem.url}}" alt="Imagem Carrossel 1" />
                 </div>
                 <div class="s-produto__carrossel-img" style="overflow: hidden;">
-                    <img src="{{produto.imagem.url}}"
-                        alt="Imagem Carrossel 2" 
-                        style="transform: scale(1.5);" />
+                    <img src="{{produto.imagem.url}}" alt="Imagem Carrossel 2" style="transform: scale(1.5);" />
                 </div>
             </div>
 
@@ -81,7 +32,8 @@
                 {% if produto.categoria %}
                     <span><a href="{% url 'loja' %}{{ produto.categoria.slug }}">{{ produto.categoria.nome }}</a></span>
                     {% if produto.tipo %}
-                    <span><a href="{% url 'loja' %}{{produto.categoria.slug}}-{{produto.tipo.slug}}">{{ produto.tipo.nome }}</a></span>
+                        <span><a href="{% url 'loja' %}{{produto.categoria.slug}}-{{produto.tipo.slug}}">{{ produto.tipo.nome
+                                }}</a></span>
                     {% endif %}
                 {% endif %}
                 <span>
@@ -92,120 +44,78 @@
             <div class="s-produto__infos">
                 <h1 class="s-produto__titulo">{{ produto.nome }}</h1>
 
-                <p class="s-produto__preco">{{ produto.preco }}</p>
+                <p class="s-produto__preco">R$ {{ produto.preco }}</p>
 
                 <div class="s-produto__cor">
                     {% if cor_selecionada %}
-                    <p class="s-produto__cor-nome">Cor: <span>Preto</span></p>
+                        <p class="s-produto__cor-nome">Cor: <span>{{ cor_selecionada.nome }}</span></p>
                     {% endif %}
                     <div class="s-produto__cores">
-                        {% for cor in cores  %}
-                        <div class="s-produto__cores-item s-produto__cores-item--selecionado"></div>
-                        <div class="s-produto__cores-item" style="background-color: black"></div>
-                        <div class="s-produto__cores-item" style="background-color: green"></div>
+                        {% for cor in cores %}
+                        {% if cor.id == cor_selecionada.id %}
+                            <div class="s-produto__cores-item s-produto__cores-item--selecionado"
+                                style="background-color: {{ cor.codigo_hex }};"></div>
+                        {% else %}
+                            <a href="{% url 'produto' produto.id cor.id %}">
+                                <div class="s-produto__cores-item" style="background-color: {{ cor.codigo_hex }}"></div>
+                            </a>
+                        {% endif %}
                         {% endfor %}
                     </div>
                 </div>
+                {% if tem_estoque %}
+                    {% if tamanhos %}
+                        <form method="POST" action="{% url 'adicionar_carrinho' produto.id %}">
+                            {% csrf_token %}
+                            <div class="s-produto__tamanho">
+                                <div class="s-produto__tamanhos">
+                                    {% for tamanho in tamanhos %}
+                                    <div class="menu__tamanho">
+                                        <div class="s-produto__tamanhos-item">{{ tamanho }}</div>
+                                        <input class="menu__checkbox" type="radio" name="tamanho" value="{{tamanho}}">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
 
-                <div class="s-produto__tamanho">
-                    <p class="s-produto__tamanho-nome">Tamanho: <span>GG</span></p>
-                    <div class="s-produto__tamanhos">
-                        <div class="s-produto__tamanhos-item s-produto__tamanhos-item--selecionado">
-                            PP
-                        </div>
-                        <div class="s-produto__tamanhos-item">P</div>
-                        <div class="s-produto__tamanhos-item">M</div>
-                        <div class="s-produto__tamanhos-item">G</div>
-                        <div class="s-produto__tamanhos-item">GG</div>
-                    </div>
-                </div>
-            </div>
-
-            <button class="s-produto__adicicionar">Adicionar à sacola</button>
-
-            <div class="s-produto__descricao">
-                <p class="s-produto__descricao-titulo">Descrição do produto</p>
-                <div class="s-produto__descricao-textos">
-                    <p>
-                        Básicos indispensáveis! A camiseta de algodão cropped é perfeita
-                        para usar com calças e saias de cintura alta.
-                    </p>
-                    <p>
-                        COMPOSIÇÃO <br />
-                        96% Viscose 4% Elastano
-                    </p>
-                    <p>
-                        CÓDIGO DO PRODUTO <br />
-                        Ref: <span>0078397051</span>
-                    </p>
-                </div>
+                            <input type="hidden" name="cor" value="{{cor_selecionada.id}}">
+                            <button type="submit" class="s-produto__adicicionar">Adicionar à sacola</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <hr>
+                    <h2>Item fora de estoque</h2>
+                    <hr>
+                {% endif %}
             </div>
         </div>
     </section>
 
-    <section class="similares">
-        <h2 class="similares__titulo">
-            Gostou desse produto? Veja itens similares
-        </h2>
+    {% if similares %}
+        <section class="similares">
+            <h2 class="similares__titulo">
+                Gostou desse produto? Veja itens similares
+            </h2>
 
-        <div class="similares__container">
-            <a href="https://www.usereserva.com/camiseta-silk-folhagem0078068/p?skuId=499434" class="produto">
-                <div class="produto__imagem">
-                    <img src="https://lojausereserva.vtexassets.com/arquivos/ids/8404940-2400-auto?v=638358284054500000&width=2400&height=auto&aspect=true"
-                        alt="Imagem do Produto" />
-                </div>
-                <div class="produto__textos">
-                    <p class="produto__titulo">Camiseta Silk Folhagem</p>
-                    <div class="produto__preco">
-                        <p class="produto__avista">R$ 349<sup>,00</sup></p>
-                        <p class="produto__parcelado">5x R$ 69<sup>,80</sup></p>
-                    </div>
-                </div>
-            </a>
-
-            <a href="https://www.usereserva.com/camiseta-silk-folhagem0078068/p?skuId=499434" class="produto">
-                <div class="produto__imagem">
-                    <img src="https://lojausereserva.vtexassets.com/arquivos/ids/8404940-2400-auto?v=638358284054500000&width=2400&height=auto&aspect=true"
-                        alt="Imagem do Produto" />
-                </div>
-                <div class="produto__textos">
-                    <p class="produto__titulo">Camiseta Silk Folhagem</p>
-                    <div class="produto__preco">
-                        <p class="produto__avista">R$ 349<sup>,00</sup></p>
-                        <p class="produto__parcelado">5x R$ 69<sup>,80</sup></p>
-                    </div>
-                </div>
-            </a>
-
-            <a href="https://www.usereserva.com/camiseta-silk-folhagem0078068/p?skuId=499434" class="produto">
-                <div class="produto__imagem">
-                    <img src="https://lojausereserva.vtexassets.com/arquivos/ids/8404940-2400-auto?v=638358284054500000&width=2400&height=auto&aspect=true"
-                        alt="Imagem do Produto" />
-                </div>
-                <div class="produto__textos">
-                    <p class="produto__titulo">Camiseta Silk Folhagem</p>
-                    <div class="produto__preco">
-                        <p class="produto__avista">R$ 349<sup>,00</sup></p>
-                        <p class="produto__parcelado">5x R$ 69<sup>,80</sup></p>
-                    </div>
-                </div>
-            </a>
-
-            <a href="https://www.usereserva.com/camiseta-silk-folhagem0078068/p?skuId=499434" class="produto">
-                <div class="produto__imagem">
-                    <img src="https://lojausereserva.vtexassets.com/arquivos/ids/8404940-2400-auto?v=638358284054500000&width=2400&height=auto&aspect=true"
-                        alt="Imagem do Produto" />
-                </div>
-                <div class="produto__textos">
-                    <p class="produto__titulo">Camiseta Silk Folhagem</p>
-                    <div class="produto__preco">
-                        <p class="produto__avista">R$ 349<sup>,00</sup></p>
-                        <p class="produto__parcelado">5x R$ 69<sup>,80</sup></p>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </section>
+            <div class="similares__container">
+                {% for similar in similares %}
+                    {% if similar.id != produto.id %}
+                        <a href="{% url 'produto' similar.id %}" class="produto">
+                            <div class="produto__imagem">
+                                <img src="{{ similar.imagem.url }}" alt="Imagem do Produto" />
+                            </div>
+                            <div class="produto__textos">
+                                <p class="produto__titulo">{{ similar.nome }}</p>
+                                <div class="produto__preco">
+                                    <p class="produto__avista">R$ {{ similar.preco }}</p>
+                                </div>
+                            </div>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
 </main>
 
 

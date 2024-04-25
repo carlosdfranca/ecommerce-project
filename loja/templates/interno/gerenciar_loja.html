@@ -1,20 +1,52 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Homepage{% endblock %}
+{% block title %}Reserva - Gerenciamento{% endblock %}
 
 {% block body %}
-<h1>Página de Gerenciamento da loja</h1>
+<main class="principal">
+    <section class="conta">
 
-<p>Faturamento: {{ faturamento }}</p>
-<p>Quantidade de Produtos: {{ quantidade_produtos }}</p>
-<p>Quantidade de Pedidos: {{ quantidade_pedidos }} </p>
 
-<hr>
-<h3>Exportar Relatórios</h3>
-<a href="{% url 'exportar_relatorio' 'pedidos' %}">Exportar Pedidos</a>
-<a href="{% url 'exportar_relatorio' 'clientes' %}">Exportar Clientes</a>
-<a href="{% url 'exportar_relatorio' 'enderecos' %}">Exportar Endereços</a>
+        
+        <div class="conta__container">
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Principais Indicadores</p>
+            </div>
+
+            <p>Faturamento: R$ {{ faturamento }}</p>
+            <p>Quantidade de Produtos Vendidos: {{ quantidade_produtos }}</p>
+            <p>Quantidade de Pedidos: {{ quantidade_pedidos }} </p>
+            
+        </div>
+
+        <div class="conta__container">
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Exportar Relatórios</p>
+            </div>
+
+            <div class="conta__form">
+                <a class="subtotal__botao" href="{% url 'exportar_relatorio' 'pedidos' %}">
+                    Exportar Pedidos
+                </a>
+            </div>
+
+            <div class="conta__form">
+                <a class="subtotal__botao" href="{% url 'exportar_relatorio' 'clientes' %}">
+                    Exportar Clientes
+                </a>
+            </div>
+
+            <div class="conta__form">
+                <a class="subtotal__botao" href="{% url 'exportar_relatorio' 'enderecos' %}">
+                    Exportar Endereços
+                </a>
+            </div>
+
+    
+        </div>
+    </section>
+</main>
 
 
 {% endblock %}

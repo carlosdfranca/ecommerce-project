@@ -1,35 +1,57 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Homepage{% endblock %}
+{% block title %}Reserva - Criar Conta{% endblock %}
 
 {% block body %}
 
-{% if erro == "email_invalido" %}
-<p>Seu e-mail está inválido, preecha novamente com outro e-mail.</p>
-{% endif %}
+<main class="principal">
+    <section class="conta">
 
-{% if erro == "usuario_existente" %}
-<p>Este e-mail ja existe em outra conta de usuário. <a href="{% url 'fazer_login' %}">Faça o Login.</a></p>
-{% endif %}
+        <div class="conta__container">
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Preencha os dados para criar sua conta.</p>
+            </div>
 
-{% if erro == "senhas_diferentes" %}
-<p>A confirmaçãoda senha tem que ser igual a senha</p>
-{% endif %}
+            {% if erro == "email_invalido" %}
+            <h3 style="color: red;">Seu e-mail está inválido, preecha novamente com outro e-mail.</h3>
+            {% endif %}
 
-{% if erro == "preenchimento" %}
-<p>Preencha todos os campos corretamente</p>
-{% endif %}
+            {% if erro == "usuario_existente" %}
+            <h3 style="color: red;">Este e-mail ja existe em outra conta de usuário. <a href="{% url 'fazer_login' %}">Faça o Login.</h3>
+            {% endif %}
 
-<h1>Preencha seus dados para criar a conta</h1>
+            {% if erro == "senhas_diferentes" %}
+            <h3 style="color: red;">A confirmação da senha tem que ser igual a senha</h3>
+            {% endif %}
 
-<form action="{% url 'criar_conta' %}" method="post">
-    {% csrf_token %}
-    <input type="email" name="email" placeholder="E-mail">
-    <input type="password" name="senha" placeholder="Senha">
-    <input type="password" name="confirmacao_senha" placeholder="Confirmação da senha">
-    <button type="submit">Criar Conta</button>
-</form>
+            {% if erro == "preenchimento" %}
+            <h3 style="color: red;">Preencha todos os campos corretamente</h3>
+            {% endif %}
 
-<a href="{% url 'fazer_login' %}">Ja tem uma conta? Fazer Login</a>
+            <form class="conta__form" action="{% url 'criar_conta' %}" method="post">
+                {% csrf_token %}
+                <div class="conta__item">
+                    <label for="email">E-mail</label>
+                    <input name="email" type="email" />
+                </div>
+
+                <div class="conta__item">
+                    <label for="senha">Senha</label>
+                    <input name="senha" type="password" />
+                </div>
+
+                <div class="conta__item">
+                    <label for="confirmacao_senha">Confirmação da Senha</label>
+                    <input name="confirmacao_senha" type="password" />
+                </div>
+
+                <button class="subtotal__botao" type="submit">
+                    CRIAR CONTA
+                </button>
+            </form>
+            <a href="{% url 'fazer_login' %}">Ja tem uma conta? Fazer Login</a>  
+        </div>
+    </section>
+</main>
 {% endblock %}

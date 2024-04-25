@@ -58,7 +58,9 @@
             <!-- Para exibir o menu do perfil, basta adicionar a classe 'cabecalho__informacoes-perfil--aberto' na div abaixo -->
             <div class="cabecalho__informacoes-perfil">
                 {% if request.user.is_authenticated %}
-                    <p class="cabecalho__texto">Olá, <span>{{ request.user.cliente.nome }}</span>!</p>
+                    <p class="cabecalho__texto">
+                        Olá{% if request.user.cliente.nome %}, <span>{{ request.user.cliente.nome }}</span>{% endif %}!
+                    </p>
                     <a class="cabecalho__link cabecalho__link--perfil" href="{% url 'minha_conta' %}">Minha Conta</a>
                     <a class="cabecalho__link cabecalho__link--perfil" href="{% url 'meus_pedidos' %}">Meus Pedidos</a>
                     {% if equipe %}

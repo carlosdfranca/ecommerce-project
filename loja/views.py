@@ -80,13 +80,16 @@ def produto(request, id_produto, id_cor=None):
             tamanhos = {item.tamanho for item in itens_estoque}
             cor_selecionada = Cor.objects.get(id=id_cor)
     
-    context = {
+    similares = Produto.objects.filter(categoria__id=produto.categoria.id, tipo__id=produto.tipo.id).exclude(id=produto.id)[:4]
+
+    context = { 
         "produto": produto, 
         "itens_estoque": itens_estoque, 
         "tem_estoque": tem_estoque,
         "cores": cores,
         "tamanhos": tamanhos, 
-        "cor_selecionada": cor_selecionada
+        "cor_selecionada": cor_selecionada,
+        "similares": similares,
     }
     
     return render(request, 'produto.html', context)
@@ -192,8 +195,7 @@ def checkout(request):
         if request.COOKIES.get("id_sessao"):
             id_sessao = request.COOKIES.get("id_sessao")
             cliente, criado = Cliente.objects.get_or_create(id_sessao = id_sessao)
-        else: 
-            
+        else:       
             return redirect('loja')
 
     pedido, criado = Pedido.objects.get_or_create(cliente=cliente, finalizado=False)
@@ -212,6 +214,7 @@ def finalizar_pedido(request, pedido_id):
         dados = request.POST.dict()
         total = float(dados.get("total").replace(",", "."))
         email = dados.get("email")
+        print(email)
         pedido = Pedido.objects.get(id=pedido_id)
         endereco_id = dados.get("endereco")
 
@@ -535,6 +538,6 @@ def exportar_relatorio(request, relatorio):
             informacoes = Cliente.objects.all()
         elif relatorio == 'enderecos':
             informacoes = Endereco.objects.all()
-        return exportar_csv(informacoes)
+        return exportar_csv(informacoes, relatorio)
     else:
         return redirect('gerenciar_loja')

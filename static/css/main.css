@@ -1872,7 +1872,8 @@ img {
 }
 
 .s-produto__cores-item--selecionado {
-    border-color: #000
+    border-color: #000;
+    border-width: 3px;
 }
 
 .s-produto__tamanho {
@@ -2558,7 +2559,7 @@ img {
 
 .conta__item {
     position: relative;
-    width: calc(50% - .8rem)
+    width: calc(100% - .8rem)
 }
 
 @media(max-width: 30em) {
@@ -2567,8 +2568,16 @@ img {
     }
 }
 
-.conta__item--email {
-    width: 100%
+.conta__item--metade {
+    width: 48.5%
+}
+
+.conta__item--rua {
+    width: 80%
+}
+
+.conta__item--numero {
+    width: 17%
 }
 
 .conta__item input {
